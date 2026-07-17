@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivek Portfolio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Vivek</h1>
+    <nav>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h2>Hello, I'm Vivek 👋</h2>
+    <p>Web Developer | Student | Tech Enthusiast</p>
+    <button onclick="showMessage()">Hire Me</button>
+</section>
+
+<section id="about">
+    <h2>About Me</h2>
+    <p>I am learning web development and creating modern websites.</p>
+</section>
+
+<section id="skills">
+    <h2>Skills</h2>
+    <ul>
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>JavaScript</li>
+    </ul>
+</section>
+
+<section id="projects">
+    <h2>Projects</h2>
+    <p>My portfolio website hosted on GitHub Pages.</p>
+</section>
+
+<section id="contact">
+    <h2>Contact</h2>
+    <p>Email: youremail@example.com</p>
+</section>
+
+<footer>
+    <p>© 2026 Vivek Portfolio</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f5f5f5;
+    color:#333;
+}
+
+header{
+    background:#0d6efd;
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+header h1{
+    font-size:28px;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin:0 10px;
+    font-weight:bold;
+}
+
+nav a:hover{
+    text-decoration:underline;
+}
+
+.hero{
+    text-align:center;
+    padding:80px 20px;
+    background:linear-gradient(135deg,#0d6efd,#6f42c1);
+    color:white;
+}
+
+.hero h2{
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    font-size:20px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:12px 25px;
+    background:white;
+    color:#0d6efd;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#e9ecef;
+}
+
+section{
+    max-width:900px;
+    margin:40px auto;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+h2{
+    color:#0d6efd;
+    margin-bottom:15px;
+}
+
+ul{
+    padding-left:20px;
+}
+
+footer{
+    text-align:center;
+    padding:20px;
+    background:#222;
+    color:white;
+    margin-top:40px;
+}
