@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Karo</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Ccircle cx='120' cy='118' r='104' fill='%231C1C1C'/%3E%3Ccircle cx='120' cy='118' r='94' fill='%23FFFDF7'/%3E%3Cg transform='translate(70,58)'%3E%3Crect x='0' y='0' width='34' height='34' rx='4' fill='none' stroke='%231C1C1C' stroke-width='7'/%3E%3Crect x='10' y='10' width='14' height='14' rx='2' fill='%23D64933'/%3E%3Crect x='76' y='0' width='34' height='34' rx='4' fill='none' stroke='%231C1C1C' stroke-width='7'/%3E%3Crect x='86' y='10' width='14' height='14' rx='2' fill='%230B6E4F'/%3E%3Crect x='0' y='76' width='34' height='34' rx='4' fill='none' stroke='%231C1C1C' stroke-width='7'/%3E%3Crect x='10' y='86' width='14' height='14' rx='2' fill='%230B6E4F'/%3E%3Crect x='46' y='6' width='10' height='10' fill='%231C1C1C'/%3E%3Crect x='60' y='6' width='10' height='10' fill='%23F2A900'/%3E%3Crect x='46' y='20' width='10' height='10' fill='%23F2A900'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --cream: #FFF6E4;
+    --ink: #1C1C1C;
+    --teal: #0B6E4F;
+    --marigold: #F2A900;
+    --vermillion: #D64933;
+    --paper: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(242,169,0,0.14), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(11,110,79,0.12), transparent 45%),
+      var(--cream);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* subtle painted-wall texture */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 1px, transparent 1px, transparent 12px);
+    pointer-events: none;
+  }
+
+  .stage {
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+  }
+
+  /* ---- Awning header ---- */
+  .awning {
+    display: flex;
+    justify-content: center;
+    margin-bottom: -18px;
+    position: relative;
+    z-index: 2;
+  }
+  .awning-strip {
+    background: repeating-linear-gradient(
+      90deg,
+      var(--vermillion) 0px, var(--vermillion) 28px,
+      var(--marigold) 28px, var(--marigold) 56px
+    );
+    height: 14px;
+    width: 92%;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+  }
+
+  .signboard {
+    background: var(--ink);
+    border-radius: 10px;
+    padding: 22px 24px 26px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+  }
+  .signboard h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    margin: 6px 0 2px;
+    color: var(--marigold);
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 0 rgba(214,73,51,0.55);
+  }
+  .signboard .tagline {
+    font-size: 13px;
+    color: #f3e6c8;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.3px;
+  }
+  .bulb-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .logo-badge {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 10px;
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+  }
+  .bulb {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--marigold);
+    box-shadow: 0 0 6px 1.5px rgba(242,169,0,0.85);
+    animation: twinkle 2.6s ease-in-out infinite;
+  }
+  .bulb:nth-child(odd) { animation-delay: 0.6s; }
+  .bulb:nth-child(3n) { animation-delay: 1.2s; }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+
+  /* ---- Ticket / card ---- */
+  .ticket {
+    background: var(--paper);
+    border-radius: 14px;
+    margin-top: 22px;
+    padding: 30px 26px 26px;
+    position: relative;
+    box-shadow: 0 20px 45px rgba(28,28,28,0.16);
+  }
+  .ticket::before,
+  .ticket::after {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    background: var(--cream);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: inset 0 0 0 1.5px rgba(0,0,0,0.05);
+  }
+  .ticket::before { left: -13px; }
+  .ticket::after { right: -13px; }
+  .perforation {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: 0;
+    border-top: 2px dashed #e3dcc7;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--teal);
+    margin-bottom: 7px;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 9px;
+    border: 2px solid #e7e0cb;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    background: #FFFDF7;
+    color: var(--ink);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input[type="text"]:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(11,110,79,0.12);
+  }
+  input[type="text"]::placeholder {
+    color: #b7ae94;
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .row > div { flex: 1; }
+
+  select {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 9px;
+    border: 2px solid #e7e0cb;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    background: #FFFDF7;
+    color: var(--ink);
+  }
+
+  .swatches {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.12s, border-color 0.12s;
+  }
+  .swatch:hover { transform: scale(1.08); }
+  .swatch.active {
+    border-color: var(--ink);
+  }
+
+  .error {
+    color: var(--vermillion);
+    font-size: 13px;
+    margin-top: 8px;
+    font-weight: 600;
+    display: none;
+  }
+
+  button.generate {
+    margin-top: 22px;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    background: var(--vermillion);
+    color: #fff8ec;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 6px 0 #a3341f;
+  }
+  button.generate:hover { background: #c23e2a; }
+  button.generate:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #a3341f;
+  }
+
+  /* ---- Result: sticker taped to shutter ---- */
+  #qr-wrap {
+    margin-top: 30px;
+    display: none;
+    justify-content: center;
+  }
+  #qr-wrap.visible { display: flex; }
+
+  .sticker {
+    background: var(--paper);
+    padding: 18px 18px 14px;
+    border-radius: 4px;
+    position: relative;
+    transform: rotate(-2deg);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+    border: 1px solid #eee;
+  }
+  .sticker .tape {
+    position: absolute;
+    width: 62px;
+    height: 22px;
+    background: rgba(242,169,0,0.55);
+    top: -12px;
+    left: -14px;
+    transform: rotate(-40deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .sticker .tape.right {
+    left: auto;
+    right: -14px;
+    transform: rotate(40deg);
+  }
+  .sticker .scan-tag {
+    text-align: center;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--teal);
+    letter-spacing: 0.06em;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+  #qrcode {
+    display: flex;
+    justify-content: center;
+  }
+  #qrcode img, #qrcode canvas {
+    display: block;
+    border-radius: 2px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  button.download {
+    background: var(--ink);
+    color: var(--marigold);
+    border: none;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+  }
+  button.download:hover { background: #000; }
+
+  .footer-credit {
+    display: flex;
+    justify-content: center;
+    margin-top: 26px;
+  }
+  .sticker-tag {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--marigold);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    transform: rotate(2deg);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .sticker-tag::before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 12px;
+    background: rgba(242,169,0,0.6);
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+  }
+
+  @media (max-width: 420px) {
+    .signboard h1 { font-size: 28px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bulb { animation: none; opacity: 0.9; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="awning"><div class="awning-strip"></div></div>
+
+  <div class="signboard">
+    <svg class="logo-badge" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="120" cy="118" r="104" fill="#F2A900"/>
+      <circle cx="120" cy="118" r="94" fill="#FFFDF7"/>
+      <rect x="18" y="4" width="46" height="16" fill="#1C1C1C" opacity="0.8" transform="rotate(-38 41 12)"/>
+      <g transform="translate(70,58)">
+        <rect x="0" y="0" width="34" height="34" rx="4" fill="none" stroke="#1C1C1C" stroke-width="7"/>
+        <rect x="10" y="10" width="14" height="14" rx="2" fill="#D64933"/>
+        <rect x="76" y="0" width="34" height="34" rx="4" fill="none" stroke="#1C1C1C" stroke-width="7"/>
+        <rect x="86" y="10" width="14" height="14" rx="2" fill="#0B6E4F"/>
+        <rect x="0" y="76" width="34" height="34" rx="4" fill="none" stroke="#1C1C1C" stroke-width="7"/>
+        <rect x="10" y="86" width="14" height="14" rx="2" fill="#0B6E4F"/>
+        <rect x="46" y="6" width="10" height="10" fill="#1C1C1C"/>
+        <rect x="60" y="6" width="10" height="10" fill="#F2A900"/>
+        <rect x="46" y="20" width="10" height="10" fill="#F2A900"/>
+        <rect x="46" y="46" width="10" height="10" fill="#1C1C1C"/>
+        <rect x="60" y="46" width="10" height="10" fill="#1C1C1C"/>
+        <rect x="46" y="60" width="10" height="10" fill="#D64933"/>
+        <rect x="60" y="60" width="10" height="10" fill="#1C1C1C"/>
+        <rect x="76" y="46" width="10" height="10" fill="#1C1C1C"/>
+        <rect x="90" y="60" width="10" height="10" fill="#1C1C1C"/>
+        <rect x="76" y="76" width="20" height="10" fill="#1C1C1C"/>
+        <rect x="90" y="90" width="10" height="10" fill="#F2A900"/>
+      </g>
+    </svg>
+    <div class="bulb-row">
+      <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+      <span class="bulb"></span><span class="bulb"></span>
+    </div>
+    <h1>QR Karo</h1>
+    <p class="tagline">Link daalo &middot; QR banao &middot; Scan karao</p>
+  </div>
+
+  <div class="ticket">
+    <div class="perforation"></div>
+
+    <label for="text-input">URL ya Text</label>
+    <input type="text" id="text-input" placeholder="https://example.com" autocomplete="off">
+    <div class="error" id="error-msg">Kuch to likho bhai — URL ya text daalo.</div>
+
+    <div class="row">
+      <div>
+        <label for="size-select">Size</label>
+        <select id="size-select">
+          <option value="200">Chota (200px)</option>
+          <option value="300" selected>Medium (300px)</option>
+          <option value="400">Bada (400px)</option>
+        </select>
+      </div>
+      <div>
+        <label>Rang</label>
+        <div class="swatches">
+          <div class="swatch active" data-color="#1C1C1C" style="background:#1C1C1C"></div>
+          <div class="swatch" data-color="#0B6E4F" style="background:#0B6E4F"></div>
+          <div class="swatch" data-color="#D64933" style="background:#D64933"></div>
+          <div class="swatch" data-color="#1E3A8A" style="background:#1E3A8A"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="generate" id="generate-btn">Banao QR Code</button>
+
+    <div id="qr-wrap">
+      <div class="sticker">
+        <div class="tape"></div>
+        <div class="tape right"></div>
+        <div id="qrcode"></div>
+        <div class="scan-tag">Scan Karo</div>
+      </div>
+    </div>
+
+    <div class="actions" id="actions-wrap" style="display:none;">
+      <button class="download" id="download-btn">Download PNG</button>
+    </div>
+  </div>
+
+  <div class="footer-credit">
+    <div class="sticker-tag">Created by Vivek &amp; Prabhu</div>
+  </div>
+
+</div>
+
+<script>
+  const input = document.getElementById('text-input');
+  const sizeSelect = document.getElementById('size-select');
+  const genBtn = document.getElementById('generate-btn');
+  const qrWrap = document.getElementById('qr-wrap');
+  const qrDiv = document.getElementById('qrcode');
+  const downloadBtn = document.getElementById('download-btn');
+  const actionsWrap = document.getElementById('actions-wrap');
+  const errorMsg = document.getElementById('error-msg');
+  const swatches = document.querySelectorAll('.swatch');
+
+  let currentColor = '#1C1C1C';
+
+  swatches.forEach(sw => {
+    sw.addEventListener('click', () => {
+      swatches.forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      currentColor = sw.getAttribute('data-color');
+    });
+  });
+
+  function generate() {
+    const value = input.value.trim();
+    if (!value) {
+      errorMsg.style.display = 'block';
+      qrWrap.classList.remove('visible');
+      actionsWrap.style.display = 'none';
+      return;
+    }
+    errorMsg.style.display = 'none';
+
+    const size = parseInt(sizeSelect.value, 10);
+
+    qrDiv.innerHTML = '';
+
+    new QRCode(qrDiv, {
+      text: value,
+      width: size,
+      height: size,
+      colorDark: currentColor,
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    qrWrap.classList.add('visible');
+    actionsWrap.style.display = 'flex';
+  }
+
+  genBtn.addEventListener('click', generate);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') generate();
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const img = qrDiv.querySelector('img');
+    const canvas = qrDiv.querySelector('canvas');
+    const link = document.createElement('a');
+    link.download = 'qr-karo.png';
+    if (img && img.src) {
+      link.href = img.src;
+    } else if (canvas) {
+      link.href = canvas.toDataURL('image/png');
+    } else {
+      return;
+    }
+    link.click();
+  });
+</script>
+
+</body>
+</html>
